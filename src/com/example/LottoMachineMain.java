@@ -1,5 +1,7 @@
 package com.example;
 
+import java.util.Arrays;
+
 public class LottoMachineMain {
 
     public static void main(String[] args) {
@@ -16,8 +18,12 @@ public class LottoMachineMain {
 
         for (int i = 0; i < result.length; i++) {
             System.out.println("result[i].getNumber() = " + result[i].getNumber());
-
         }
+
+        System.out.println("----------------------");
+
+        Arrays.stream(result).map(ball -> "result[i].getNumber() = " + ball.getNumber())
+            .forEach(System.out::println);
     }
 
 }
