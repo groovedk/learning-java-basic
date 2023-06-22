@@ -9,9 +9,9 @@ public class User implements Serializable {
     private int birthYear;
 
 
-    public User(String email, String namel, int birthYear) {
+    public User(String email, String name, int birthYear) {
         this.email = email;
-        this.name = namel;
+        this.name = name;
         this.birthYear = birthYear;
     }
 
