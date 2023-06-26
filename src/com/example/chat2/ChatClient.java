@@ -15,30 +15,33 @@ public class ChatClient {
         }
 
         String name = args[0];
-        Socket socket = new Socket("107.0.0.1", 8888);
-        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        Socket socket = new Socket("127.0.0.1", 8888);
         PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         BufferedReader kb = new BufferedReader(new InputStreamReader(System.in));
 
+        // 닉네임 전송
         pw.println(name);
         pw.flush();
 
+        //백라운드에서 서버가 보내준 메세지를 읽어 화면에 출력함
         InputThread inputThread = new InputThread(br);
         inputThread.start();
 
+        //입력 메세지 서버 전송
         try {
             String line = null;
             while ((line = kb.readLine()) != null) {
                 if ("/quit".equals(line)) {
+                    pw.println("/quit");
+                    pw.flush();
                     break;
                 }
                 pw.println(line);
                 pw.flush();
-
-
             }
         } catch (Exception ex) {
-            System.out.println(" ............... ");
+            System.out.println(" 메세지 전송오류............... ");
         }
 
         try {
@@ -51,7 +54,6 @@ public class ChatClient {
         } catch (Exception ex) {
 
         }
-
         try {
             socket.close();
         } catch (Exception ex) {
@@ -73,7 +75,7 @@ class InputThread extends Thread {
 
     @Override
     public void run() {
-        super.run();
+//        super.run();
 
         try {
             String line = null;

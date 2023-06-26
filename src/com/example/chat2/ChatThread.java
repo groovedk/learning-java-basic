@@ -17,6 +17,18 @@ public class ChatThread extends Thread {
     private Socket socket;
     List<ChatThread> list;
 
+    public ChatThread(Socket socket, List<ChatThread> list) throws Exception {
+        this.socket = socket;
+        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+
+        this.br = br;
+        this.pw = pw;
+        this.name = br.readLine();
+        this.list = list;
+
+        this.list.add(this);
+    }
 
     public void sendMessage(String msg) {
         pw.println(msg);
@@ -25,18 +37,20 @@ public class ChatThread extends Thread {
 
     @Override
     public void run() {
-        super.run();
+//        super.run();
         //broadcast
 
         try {
-            broadcast(name + " connect", false);
+            broadcast(name + " 님이 연결되었습니다.", false);
             String line = null;
             try {
                 while ((line = br.readLine()) != null) {
+                    //나를 포함한 챗 스레드에세 메세지를 보냄
                     if ("/quit".equals(line)) {
+//                        throw new RuntimeException("접속종료");
                         break;
                     }
-                    broadcast(name + " : " + line, false);
+                    broadcast(name + " : " + line, true);
 
                 }
             } catch (Exception ex) {
@@ -45,7 +59,7 @@ public class ChatThread extends Thread {
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
-            broadcast(name + " disconnect!!", false);
+            broadcast(name + " 님의 연결이 종료되었습니다!!", false);
             this.list.remove(this);
             try {
                 br.close();
@@ -65,20 +79,6 @@ public class ChatThread extends Thread {
         }
     }
 
-    public ChatThread(Socket socket, List<ChatThread> list) throws Exception {
-
-        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-
-        this.br = br;
-        this.pw = pw;
-        this.socket = socket;
-        this.name = br.readLine();
-        this.list = list;
-        this.list.add(this);
-
-
-    }
 
     private void broadcast(String msg, boolean includeMe) {
         List<ChatThread> chatThreads = new ArrayList<>();
@@ -96,6 +96,7 @@ public class ChatThread extends Thread {
                         continue;
                     }
                 }
+                ct.sendMessage(msg);
 
             }
         } catch (Exception ex) {
